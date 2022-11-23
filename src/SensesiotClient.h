@@ -5,8 +5,6 @@
 #ifndef SensesiotClient_h
 #define SensesiotClient_h
 
-#define TEST_PROTOCOL 0
-
 #define USERIDSTR_BUFFER_SIZE (33)
 #define DEVKEYSTR_BUFFER_SIZE (65)
 #define CLIENT_WIFI_BUFFER_SIZE (21)
