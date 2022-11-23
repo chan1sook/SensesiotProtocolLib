@@ -1,0 +1,26 @@
+{
+  "files.associations": {
+    "*.ejs": "html",
+    "array": "cpp",
+    "deque": "cpp",
+    "string": "cpp",
+    "unordered_map": "cpp",
+    "vector": "cpp",
+    "initializer_list": "cpp",
+    "*.tcc": "cpp",
+    "functional": "cpp",
+    "istream": "cpp",
+    "tuple": "cpp",
+    "utility": "cpp",
+    "system_error": "cpp",
+    "type_traits": "cpp",
+    "limits": "cpp",
+    "list": "cpp",
+    "string_view": "cpp",
+    "ranges": "cpp",
+    "cstddef": "cpp",
+    "xstring": "cpp"
+  },
+  "arduino.path": "C:\\Program Files\\Arduino CLI",
+  "arduino.useArduinoCli": true
+}

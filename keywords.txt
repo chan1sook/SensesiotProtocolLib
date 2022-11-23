@@ -1,0 +1,30 @@
+SensesiotClient	KEYWORD1
+CONTROL_STATE_ON LITERAL1
+CONTROL_STATE_OFF LITERAL1
+
+getUserid	KEYWORD2
+setUserid	KEYWORD2
+getDevicekey	KEYWORD2
+setDevicekey	KEYWORD2
+
+begin	KEYWORD2
+wifiStatus	KEYWORD2
+ready	KEYWORD2
+waitUntilReady	KEYWORD2
+
+setData	KEYWORD2
+setControl	KEYWORD2
+retainData	KEYWORD2
+retainControl	KEYWORD2
+
+connectMqtt	KEYWORD2
+loop	KEYWORD2
+mqttStatus	KEYWORD2
+
+subscribeData	KEYWORD2
+subscribeControl	KEYWORD2
+unsubscribeData	KEYWORD2
+unsubscribeControl	KEYWORD2
+
+setDataCallback	KEYWORD2
+setControlCallback	KEYWORD2

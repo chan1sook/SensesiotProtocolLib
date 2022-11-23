@@ -1,0 +1,7 @@
+{
+  "sketch": "examples\\control_device\\control_device.ino",
+  "configuration": "FlashFreq=80,UploadSpeed=921600,DebugLevel=none,EraseFlash=none",
+  "board": "esp32:esp32:sensesiot_weizen",
+  "output": ".output",
+  "port": "COM12"
+}
