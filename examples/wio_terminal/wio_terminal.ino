@@ -1,6 +1,7 @@
 /*
   Example - Integration with Seeeduino WIO Terminal
   Created by Natthawat Raocharoensinp, January 23, 2023.
+  Last Updated by Natthawat Raocharoensinp, January 24, 2023.
 
   Seeeduino Board Library Info: https://wiki.seeedstudio.com/Seeed_Arduino_Boards/
   Using Library
@@ -30,10 +31,10 @@ uint8_t prevBtnStates;
 bool ctrlState;
 String ctrlStateText;
 
-const char userid[] PROGMEM = "sensesiot-username";
-const char key[] PROGMEM = "sensesiot-devicekey";
-const char wifissid[] PROGMEM = "wifi-ssid";
-const char wifipw[] PROGMEM = "wifi-password";
+const char userid[] = "sensesiot-username";
+const char key[] = "sensesiot-devicekey";
+const char wifissid[] = "wifi-ssid";
+const char wifipw[] = "wifi-password";
 
 SensesiotClient sensesProtocol(userid, key);
 void controlCallback(uint8_t slot, const char *state);

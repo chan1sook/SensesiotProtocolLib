@@ -1,7 +1,7 @@
 {
-    "sketch": "examples\\wio_terminal\\wio_terminal.ino",
-    "configuration": "role=master,cache=on,speed=120,opt=small,maxqspi=50,usbstack=arduino,debug=off,txrxled=on",
-    "board": "Seeeduino:samd:seeed_wio_terminal",
+    "sketch": "examples\\publish_data\\publish_data.ino",
+    "configuration": "xtal=80,vt=flash,exception=disabled,stacksmash=disabled,ssl=all,mmu=3232,non32xfer=fast,eesz=4M2M,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=921600",
+    "board": "esp8266:esp8266:d1_mini",
     "output": ".output",
-    "port": "COM9"
+    "port": "COM14"
 }

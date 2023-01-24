@@ -1,7 +1,7 @@
 /*
   SensesiotClient.h - A library for send and receive data from "Sensesiot Platform"
   Created by Natthawat Raocharoensinp, November 21, 2022.
-  Last Updated by Natthawat Raocharoensinp, January 23, 2023.
+  Last Updated by Natthawat Raocharoensinp, January 24, 2023.
 */
 #ifndef SensesiotClient_h
 #define SensesiotClient_h
@@ -22,26 +22,32 @@ typedef void (*sensesiotControlCallback)(uint8_t, const char *);
 
 #include "Arduino.h"
 
+#if defined(ESP8266)
+#include "ESP8266WiFi.h"
+#include <ESP8266HTTPClient.h>
+#else
 #include "WiFi.h"
 #include "HTTPClient.h"
+#endif
+
 #include <MQTT.h>
 
 class SensesiotClient
 {
 private:
-  static const char *PROGMEM _API_HOST;
+  static const char *_API_HOST;
 #if TEST_PROTOCOL
-  static const uint16_t PROGMEM _MQTT_PORT = 4057;
+  static const uint16_t _MQTT_PORT = 4057;
 #else
-  static const uint16_t PROGMEM _MQTT_PORT = 3057;
+  static const uint16_t _MQTT_PORT = 3057;
 #endif
-  static const char *PROGMEM _CLIENT_MACADDR_FSTR;
-  static const char *PROGMEM _MQTT_USERNAME_FSTR;
-  static const char *PROGMEM _DATA_TOPIC_FSTR;
-  static const char *PROGMEM _CONTROL_TOPIC_FSTR;
-  static const char *PROGMEM _RETAIN_TOPIC_FSTR;
-  static const char *PROGMEM _DATA_TOPIC_START;
-  static const char *PROGMEM _CONTROL_TOPIC_START;
+  static const char *_CLIENT_MACADDR_FSTR;
+  static const char *_MQTT_USERNAME_FSTR;
+  static const char *_DATA_TOPIC_FSTR;
+  static const char *_CONTROL_TOPIC_FSTR;
+  static const char *_RETAIN_TOPIC_FSTR;
+  static const char *_DATA_TOPIC_START;
+  static const char *_CONTROL_TOPIC_START;
 
   char _userid[USERIDSTR_BUFFER_SIZE];
   char _devicekey[DEVKEYSTR_BUFFER_SIZE];

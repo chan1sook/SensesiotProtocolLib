@@ -1,14 +1,14 @@
 /*
   Example - Subscribe Data from Sensesiot Platform
   Created by Natthawat Raocharoensinp, November 21, 2022.
-  Last Updated by Natthawat Raocharoensinp, January 23, 2023.
+  Last Updated by Natthawat Raocharoensinp, January 24, 2023.
 */
 #include <Sensesiot.h>
 
-const char userid[] PROGMEM = "sensesiot-username";
-const char key[] PROGMEM = "sensesiot-devicekey";
-const char wifissid[] PROGMEM = "wifi-ssid";
-const char wifipw[] PROGMEM = "wifi-password";
+const char userid[] = "sensesiot-username";
+const char key[] = "sensesiot-devicekey";
+const char wifissid[] = "wifi-ssid";
+const char wifipw[] = "wifi-password";
 
 SensesiotClient sensesProtocol(userid, key);
 

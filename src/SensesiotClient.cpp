@@ -2,18 +2,18 @@
 #include "SensesiotClient.h"
 
 #if TEST_PROTOCOL
-const char *PROGMEM SensesiotClient::_API_HOST = "test.sensesiot.net";
+const char *SensesiotClient::_API_HOST = "test.sensesiot.net";
 #else
-const char *PROGMEM SensesiotClient::_API_HOST = "www.sensesiot.net";
+const char *SensesiotClient::_API_HOST = "www.sensesiot.net";
 #endif
 
-const char *PROGMEM SensesiotClient::_CLIENT_MACADDR_FSTR = "wf-%02X:%02X:%02X:%02X:%02X:%02X";
-const char *PROGMEM SensesiotClient::_MQTT_USERNAME_FSTR = "%s";
-const char *PROGMEM SensesiotClient::_DATA_TOPIC_FSTR = "data/%s/%d";
-const char *PROGMEM SensesiotClient::_CONTROL_TOPIC_FSTR = "control/%s/%d";
-const char *PROGMEM SensesiotClient::_RETAIN_TOPIC_FSTR = "retain/%s/%s/%d";
-const char *PROGMEM SensesiotClient::_DATA_TOPIC_START = "data/";
-const char *PROGMEM SensesiotClient::_CONTROL_TOPIC_START = "control/";
+const char *SensesiotClient::_CLIENT_MACADDR_FSTR = "wf-%02X:%02X:%02X:%02X:%02X:%02X";
+const char *SensesiotClient::_MQTT_USERNAME_FSTR = "%s";
+const char *SensesiotClient::_DATA_TOPIC_FSTR = "data/%s/%d";
+const char *SensesiotClient::_CONTROL_TOPIC_FSTR = "control/%s/%d";
+const char *SensesiotClient::_RETAIN_TOPIC_FSTR = "retain/%s/%s/%d";
+const char *SensesiotClient::_DATA_TOPIC_START = "data/";
+const char *SensesiotClient::_CONTROL_TOPIC_START = "control/";
 
 SensesiotClient::SensesiotClient(const char *userid, const char *devicekey)
 {
@@ -68,9 +68,16 @@ bool SensesiotClient::ready()
 void SensesiotClient::waitUntilReady()
 {
   while (!WiFi.isConnected())
-    ;
+  {
+#if defined(ESP8266)
+    delay(10);
+#endif
+  }
   while (!_mqttClient.connected())
   {
+#if defined(ESP8266)
+    delay(10);
+#endif
     connectMqtt();
   }
 }
