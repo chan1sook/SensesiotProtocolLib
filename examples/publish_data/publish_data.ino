@@ -1,16 +1,15 @@
 /*
   Example - Publish Data to Sensesiot Platform
   Created by Natthawat Raocharoensinp, November 21, 2022.
-  Last Updated by Natthawat Raocharoensinp, January 24, 2023.
+  Last Updated by Natthawat Raocharoensinp, August 28, 2023.
 */
 #include <Sensesiot.h>
 
-const char userid[] = "sensesiot-username";
 const char key[] = "sensesiot-devicekey";
 const char wifissid[] = "wifi-ssid";
 const char wifipw[] = "wifi-password";
 
-SensesiotClient sensesProtocol(userid, key);
+SensesiotClient sensesProtocol(key);
 
 void setup()
 {

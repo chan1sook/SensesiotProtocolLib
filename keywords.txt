@@ -11,6 +11,9 @@ begin	KEYWORD2
 wifiStatus	KEYWORD2
 ready	KEYWORD2
 waitUntilReady	KEYWORD2
+disconnect	KEYWORD2
+wifiDisconnect	KEYWORD2
+mqttDisconnect	KEYWORD2
 
 setData	KEYWORD2
 setControl	KEYWORD2

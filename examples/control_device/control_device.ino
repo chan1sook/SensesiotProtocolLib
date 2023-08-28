@@ -1,7 +1,7 @@
 /*
   Example - Control Device from Sensesiot Platform
   Created by Natthawat Raocharoensinp, November 21, 2022.
-  Last Updated by Natthawat Raocharoensinp, January 24, 2023.
+  Last Updated by Natthawat Raocharoensinp, August 28, 2023.
 */
 #include <Sensesiot.h>
 
@@ -9,12 +9,11 @@
 #define LED_BUILTIN 2
 #endif
 
-const char userid[] = "sensesiot-username";
 const char key[] = "sensesiot-devicekey";
 const char wifissid[] = "wifi-ssid";
 const char wifipw[] = "wifi-password";
 
-SensesiotClient sensesProtocol(userid, key);
+SensesiotClient sensesProtocol(key);
 
 void controlCallback(uint8_t slot, const char *state);
 

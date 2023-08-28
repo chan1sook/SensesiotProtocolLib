@@ -1,7 +1,7 @@
 /*
   SensesiotClient.h - A library for send and receive data from "Sensesiot Platform"
   Created by Natthawat Raocharoensinp, November 21, 2022.
-  Last Updated by Natthawat Raocharoensinp, January 24, 2023.
+  Last Updated by Natthawat Raocharoensinp, August 28, 2023.
 */
 #ifndef SensesiotClient_h
 #define SensesiotClient_h
@@ -41,16 +41,12 @@ private:
 #else
   static const uint16_t _MQTT_PORT = 3057;
 #endif
-  static const char *_CLIENT_MACADDR_FSTR;
-  static const char *_MQTT_USERNAME_FSTR;
-  static const char *_DATA_TOPIC_FSTR;
-  static const char *_CONTROL_TOPIC_FSTR;
-  static const char *_RETAIN_TOPIC_FSTR;
   static const char *_DATA_TOPIC_START;
   static const char *_CONTROL_TOPIC_START;
+  static const char *_RETAIN_TOPIC_START;
 
-  char _userid[USERIDSTR_BUFFER_SIZE];
-  char _devicekey[DEVKEYSTR_BUFFER_SIZE];
+  String _userid = "";
+  String _devicekey = "";
   WiFiClient _wifiClient;
   MQTTClient _mqttClient;
 
@@ -58,6 +54,7 @@ private:
   sensesiotControlCallback _mqttControlCallback;
 
 public:
+  SensesiotClient(const char *devicekey);
   SensesiotClient(const char *userid, const char *devicekey);
 
   const char *getUserid();
@@ -69,6 +66,9 @@ public:
   wl_status_t wifiStatus();
   bool ready();
   void waitUntilReady();
+  void disconnect();
+  bool wifiDisconnect();
+  bool mqttDisconnect();
 
   bool setData(uint8_t slot, double value);
   bool setControl(uint8_t slot, const char *state);
@@ -89,6 +89,7 @@ public:
   void setDataCallback(sensesiotDataCallback callback);
   void setControlCallback(sensesiotControlCallback callback);
 
+  SensesiotClient(String devicekey);
   SensesiotClient(String userid, String devicekey);
   void setUserid(String userid);
   void setDevicekey(String userid);

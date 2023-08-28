@@ -7,13 +7,14 @@ const char *SensesiotClient::_API_HOST = "test.sensesiot.net";
 const char *SensesiotClient::_API_HOST = "www.sensesiot.net";
 #endif
 
-const char *SensesiotClient::_CLIENT_MACADDR_FSTR = "wf-%02X:%02X:%02X:%02X:%02X:%02X";
-const char *SensesiotClient::_MQTT_USERNAME_FSTR = "%s";
-const char *SensesiotClient::_DATA_TOPIC_FSTR = "data/%s/%d";
-const char *SensesiotClient::_CONTROL_TOPIC_FSTR = "control/%s/%d";
-const char *SensesiotClient::_RETAIN_TOPIC_FSTR = "retain/%s/%s/%d";
 const char *SensesiotClient::_DATA_TOPIC_START = "data/";
 const char *SensesiotClient::_CONTROL_TOPIC_START = "control/";
+const char *SensesiotClient::_RETAIN_TOPIC_START = "retain/";
+
+SensesiotClient::SensesiotClient(const char *devicekey)
+{
+  setDevicekey(devicekey);
+}
 
 SensesiotClient::SensesiotClient(const char *userid, const char *devicekey)
 {
@@ -23,24 +24,22 @@ SensesiotClient::SensesiotClient(const char *userid, const char *devicekey)
 
 const char *SensesiotClient::getUserid()
 {
-  return _userid;
+  return _userid.c_str();
 }
 
 void SensesiotClient::setUserid(const char *userid)
 {
-  strncpy(_userid, userid, USERIDSTR_BUFFER_SIZE - 1);
-  _devicekey[USERIDSTR_BUFFER_SIZE] = '\0';
+  this->setUserid(String(userid));
 }
 
 const char *SensesiotClient::getDevicekey()
 {
-  return _devicekey;
+  return _devicekey.c_str();
 }
 
 void SensesiotClient::setDevicekey(const char *devicekey)
 {
-  strncpy(_devicekey, devicekey, DEVKEYSTR_BUFFER_SIZE - 1);
-  _devicekey[DEVKEYSTR_BUFFER_SIZE - 1] = '\0';
+  this->setDevicekey(String(devicekey));
 }
 
 bool SensesiotClient::begin(const char *wifissid, const char *wifipw)
@@ -82,64 +81,83 @@ void SensesiotClient::waitUntilReady()
   }
 }
 
+void SensesiotClient::disconnect()
+{
+  mqttDisconnect();
+  wifiDisconnect();
+}
+
+bool SensesiotClient::wifiDisconnect()
+{
+  return WiFi.disconnect();
+}
+
+bool SensesiotClient::mqttDisconnect()
+{
+  return _mqttClient.disconnect();
+}
+
 bool SensesiotClient::setData(uint8_t slot, double value)
 {
-  char topicBuffer[MQTTTOPIC_BUFFER_SIZE];
-  char floatStrBuffer[FLOATSTR_BUFFER_SIZE];
+  String topicStr = _DATA_TOPIC_START;
+  topicStr.concat(_devicekey);
+  topicStr.concat("/");
+  topicStr.concat(slot);
 
-  dtostrf(value, 0, 4, floatStrBuffer);
-  sprintf(topicBuffer, _DATA_TOPIC_FSTR, _devicekey, slot);
-  return _mqttClient.publish(topicBuffer, floatStrBuffer);
+  String payloadStr = String(value);
+  return _mqttClient.publish(topicStr.c_str(), payloadStr.c_str());
 }
 
 bool SensesiotClient::setControl(uint8_t slot, const char *stateStr)
 {
-  char topicBuffer[MQTTTOPIC_BUFFER_SIZE];
-  sprintf(topicBuffer, _CONTROL_TOPIC_FSTR, _devicekey, slot);
-  return _mqttClient.publish(topicBuffer, stateStr);
+  String topicStr = _CONTROL_TOPIC_START;
+  topicStr.concat(_devicekey);
+  topicStr.concat("/");
+  topicStr.concat(slot);
+
+  return _mqttClient.publish(topicStr.c_str(), stateStr);
 }
 
 bool SensesiotClient::setControl(uint8_t slot, String stateStr)
 {
-  char topicBuffer[MQTTTOPIC_BUFFER_SIZE];
-  sprintf(topicBuffer, _CONTROL_TOPIC_FSTR, _devicekey, slot);
-  return _mqttClient.publish(topicBuffer, stateStr.c_str());
+  return this->setControl(slot, stateStr.c_str());
 }
 
 bool SensesiotClient::setControl(uint8_t slot, double value)
 {
-  char topicBuffer[MQTTTOPIC_BUFFER_SIZE];
-  sprintf(topicBuffer, _CONTROL_TOPIC_FSTR, _devicekey, slot);
-  return _mqttClient.publish(topicBuffer, String(value).c_str());
+  String payloadStr = String(value);
+  return this->setControl(slot, payloadStr.c_str());
 }
 
 bool SensesiotClient::retainData(uint8_t slot)
 {
-  char topicBuffer[MQTTTOPIC_BUFFER_SIZE];
+  String topicStr = _RETAIN_TOPIC_START;
+  topicStr.concat(_DATA_TOPIC_START);
+  topicStr.concat(_devicekey);
+  topicStr.concat("/");
+  topicStr.concat(slot);
 
-  sprintf(topicBuffer, _RETAIN_TOPIC_FSTR, "data", _devicekey, slot);
-  return _mqttClient.publish(topicBuffer, "");
+  return _mqttClient.publish(topicStr.c_str(), "");
 }
 
 bool SensesiotClient::retainControl(uint8_t slot)
 {
-  char topicBuffer[MQTTTOPIC_BUFFER_SIZE];
+  String topicStr = _RETAIN_TOPIC_START;
+  topicStr.concat(_CONTROL_TOPIC_START);
+  topicStr.concat(_devicekey);
+  topicStr.concat("/");
+  topicStr.concat(slot);
 
-  sprintf(topicBuffer, _RETAIN_TOPIC_FSTR, "control", _devicekey, slot);
-  return _mqttClient.publish(topicBuffer, "");
+  return _mqttClient.publish(topicStr.c_str(), "");
 }
 
 bool SensesiotClient::connectMqtt()
 {
-  uint8_t mac[6];
-  WiFi.macAddress(mac);
-  char macStr[CLIENT_WIFI_BUFFER_SIZE];
-  sprintf(macStr, _CLIENT_MACADDR_FSTR, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  String macStr = "wf-";
+  macStr.concat(WiFi.macAddress());
 
-  char usernameStr[CLIENT_USERNAME_BUFFER_SIZE];
-  sprintf(usernameStr, _MQTT_USERNAME_FSTR, _userid);
-
-  bool status = _mqttClient.connect(macStr, usernameStr);
+  String usernameStr = this->_devicekey;
+  bool status = _mqttClient.connect(macStr.c_str(), usernameStr.c_str());
 
   return status;
 }
@@ -156,37 +174,38 @@ lwmqtt_err_t SensesiotClient::mqttErrorStatus()
 
 bool SensesiotClient::subscribeData(uint8_t slot)
 {
-  char topicBuffer[MQTTTOPIC_BUFFER_SIZE];
-  sprintf(topicBuffer, _DATA_TOPIC_FSTR, _devicekey, slot);
-
-  return _mqttClient.subscribe(topicBuffer);
+  String topicStr = _DATA_TOPIC_START;
+  topicStr.concat(_devicekey);
+  topicStr.concat("/");
+  topicStr.concat(slot);
+  return _mqttClient.subscribe(topicStr.c_str());
 }
 
 bool SensesiotClient::subscribeControl(uint8_t slot)
 {
-  char topicBuffer[MQTTTOPIC_BUFFER_SIZE];
-  sprintf(topicBuffer, _CONTROL_TOPIC_FSTR, _devicekey, slot);
-
-  return _mqttClient.subscribe(topicBuffer);
+  String topicStr = _CONTROL_TOPIC_START;
+  topicStr.concat(_devicekey);
+  topicStr.concat("/");
+  topicStr.concat(slot);
+  return _mqttClient.subscribe(topicStr.c_str());
 }
 
 bool SensesiotClient::unsubscribeData(uint8_t slot)
 {
-#ifndef ARDUINO_ARCH_ESP8266
-  char topicBuffer[MQTTTOPIC_BUFFER_SIZE];
-  sprintf(topicBuffer, _DATA_TOPIC_FSTR, _devicekey, slot);
-
-  return _mqttClient.unsubscribe(topicBuffer);
-#endif
-  return false;
+  String topicStr = _DATA_TOPIC_START;
+  topicStr.concat(_devicekey);
+  topicStr.concat("/");
+  topicStr.concat(slot);
+  return _mqttClient.unsubscribe(topicStr.c_str());
 }
 
 bool SensesiotClient::unsubscribeControl(uint8_t slot)
 {
-  char topicBuffer[MQTTTOPIC_BUFFER_SIZE];
-  sprintf(topicBuffer, _CONTROL_TOPIC_FSTR, _devicekey, slot);
-
-  return _mqttClient.unsubscribe(topicBuffer);
+  String topicStr = _CONTROL_TOPIC_START;
+  topicStr.concat(_devicekey);
+  topicStr.concat("/");
+  topicStr.concat(slot);
+  return _mqttClient.unsubscribe(topicStr.c_str());
 }
 
 void SensesiotClient::setDataCallback(sensesiotDataCallback callback)
@@ -199,6 +218,11 @@ void SensesiotClient::setControlCallback(sensesiotControlCallback callback)
   _mqttControlCallback = callback;
 }
 
+SensesiotClient::SensesiotClient(String devicekey)
+{
+  setDevicekey(devicekey);
+}
+
 SensesiotClient::SensesiotClient(String userid, String devicekey)
 {
   setUserid(userid);
@@ -207,14 +231,14 @@ SensesiotClient::SensesiotClient(String userid, String devicekey)
 
 void SensesiotClient::setUserid(String userid)
 {
-  strncpy(_userid, userid.c_str(), USERIDSTR_BUFFER_SIZE - 1);
-  _devicekey[USERIDSTR_BUFFER_SIZE - 1] = '\0';
+  this->_userid.clear();
+  this->_userid.concat(userid);
 }
 
 void SensesiotClient::setDevicekey(String devicekey)
 {
-  strncpy(_devicekey, devicekey.c_str(), DEVKEYSTR_BUFFER_SIZE - 1);
-  _devicekey[DEVKEYSTR_BUFFER_SIZE - 1] = '\0';
+  this->_devicekey.clear();
+  this->_devicekey.concat(devicekey);
 }
 
 void SensesiotClient::mqttCallback(String topic, String payload)
@@ -244,12 +268,7 @@ void SensesiotClient::mqttCallback(String topic, String payload)
 
 bool SensesiotClient::isTopicStartWith(const char *topic, const char *str)
 {
-  int len = strlen(str);
-  char strBuffer[len + 1];
-  strncpy(strBuffer, topic, len);
-  strBuffer[len] = '\0';
-
-  return strcmp(strBuffer, str) == 0;
+  return String(topic).startsWith(str);
 }
 
 uint8_t SensesiotClient::slotFromTopic(const char *topic)
